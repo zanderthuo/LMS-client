@@ -5,6 +5,7 @@ import CourseSlice from './slices/CourseSlice'
 import LectureSlice from './slices/LectureSlice'
 import RazorpaySlice from './slices/RazorpaySlice'
 import StatSlice from './slices/StatSlice'
+import SubscriptionSlice from './slices/SubscriptionSlice'
 
 const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ const store = configureStore({
         course: CourseSlice,
         razorpay: RazorpaySlice,
         lecture: LectureSlice,
-        stat: StatSlice
+        stat: StatSlice,
+        subscription: SubscriptionSlice
     },
     devTools: true
 })

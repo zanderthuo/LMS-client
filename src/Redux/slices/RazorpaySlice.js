@@ -9,8 +9,12 @@ const initialState = {
     subscription_id: "",
     allPayments: {},
     finalMonths: {},
-    monthlySalesRecord: []
-}
+    monthlySalesRecord: [],
+    paystackAccessCode: "",
+    verificationStatus: "", // To track verification status
+    transactionDetails: {} // To store transaction details
+};
+
 
 export const getRazorpayKey = createAsyncThunk("/razorpay/getKey", async () => {
     try {
@@ -94,6 +98,40 @@ export const cancelSubscription = createAsyncThunk("/cancel/subscribtion", async
     }
 })
 
+export const initializePaystackTransaction = createAsyncThunk("/payments/paystack/initialize", async (transactionData) => {
+    try {
+        toast.loading("Initializing transaction...", {
+            position: 'top-center'
+        });
+        const response = await axiosInstance.post('/payments/paystack/initialize', transactionData);
+        toast.dismiss();
+        toast.success("Transaction initialized successfully");
+        return response.data;
+    } catch (error) {
+        toast.dismiss();
+        toast.error(error?.response?.data?.message);
+        throw error;
+    }
+});
+
+export const verifyPaystackTransaction = createAsyncThunk("/paystack/verify", async (data) => {
+    try {
+        toast.loading("Verifying transaction...", {
+            position: 'top-center'
+        });
+        const response = await axiosInstance.get(`/paystack/verify?reference=${data.reference}`);
+        toast.dismiss();
+        toast.success("Transaction verified successfully");
+        return response.data;
+    } catch (error) {
+        toast.dismiss();
+        toast.error(error?.response?.data?.message);
+        throw error;
+    }
+});
+
+
+
 
 const razorpaySlice = createSlice({
     name: "razorpay",
@@ -110,6 +148,26 @@ const razorpaySlice = createSlice({
             state.allPayments = action?.payload?.allPayments
             state.finalMonths = action?.payload?.finalMonths
             state.monthlySalesRecord = action?.payload?.monthlySalesRecord
+        })
+        builder.addCase(initializePaystackTransaction.fulfilled, (state, action) => {
+            // Store the Paystack `access_code` if needed
+            state.paystackAccessCode = action?.payload?.data?.access_code;
+        })
+        builder.addCase(verifyPaystackTransaction.fulfilled, (state, action) => {
+            const { status, amount, message } = action.payload;
+
+            // Assuming action.payload contains verification details
+            if (status === 'success') {
+                state.verificationStatus = 'success';
+                state.transactionDetails = {
+                    amount,
+                    message
+                };
+                toast.success("Payment verified successfully");
+            } else {
+                state.verificationStatus = 'failed';
+                toast.error("Payment verification failed");
+            }
         })
     }
 })

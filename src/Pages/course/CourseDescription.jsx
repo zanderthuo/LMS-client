@@ -9,7 +9,7 @@ function CourseDescription() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { role, isLoggedIn } = useSelector((state) => state.auth);
-    const { courseData, progressData } = useSelector((state) => state.course); // Use the correct slice state
+    const { courseData } = useSelector((state) => state.course); // Use the correct slice state
 
     const [progress, setProgress] = useState(null);
 
@@ -28,10 +28,6 @@ function CourseDescription() {
 
     const userHasAccess = isLoggedIn && (role === 'ADMIN' || role === 'USER');
 
-    // Calculate progress percentage
-    const percentageProgress = progress
-        ? ((progress.completedLectures / state.numberOfLectures) * 100).toFixed(2)
-        : 0;
 
     return (
         <HomeLayout>
@@ -41,7 +37,6 @@ function CourseDescription() {
                     <p className="font-semibold lg:text-2xl text-xl text-yellow-400 capitalize">Course category: <span className="text-xl text-blue-500">{state.category}</span></p>
                     <p className="font-semibold lg:text-2xl text-xl text-yellow-400 capitalize">Instructor: <span className="text-xl text-blue-500">{state.createdBy}</span></p>
                     <p className="font-semibold lg:text-2xl text-xl text-yellow-400 capitalize">Number of lectures: <span className="text-xl text-blue-500">{state.numberOfLectures}</span></p>
-                    <p className="font-semibold lg:text-2xl text-xl text-yellow-400 capitalize">Progress: <span className="text-xl text-blue-500">{percentageProgress}%</span></p>
                     {
                         userHasAccess ? (
                             <button className="btn btn-primary capitalize" onClick={() => navigate(`/course/${state.title}/${state._id}/lectures`, { state: state })}>Go to Lectures</button>

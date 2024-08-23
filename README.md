@@ -5,7 +5,7 @@
 1. Clone the project
 
 ```bash
-    git clone https://github.com/Sukomal07/learning-management-system.git
+    git clone https://github.com/zanderthuo/LMS-client.git
 ```
 
 2. Move into the directory
